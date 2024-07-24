@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Transactions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .error {
+            color: red;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Allows the text to wrap */
+            word-wrap: break-word; /* Allows long words to break */
+        }
+    </style>
+</head>
+<body>
+    <h1>Solana Transaction Data</h1>
+    <input type="text" id="walletAddress" placeholder="Enter Wallet Address" />
+    <button onclick="fetchTransactions()">Get Transactions</button>
+    <div id="error" class="error"></div>
+    <pre id="result" style="display:none;"></pre>
+    <script>
+        async function fetchTransactions() {
+            const walletAddress = document.getElementById('walletAddress').value;
+            const errorDiv = document.getElementById('error');
+            const resultPre = document.getElementById('result');
+            
+            if (!walletAddress) {
+                errorDiv.textContent = 'Please enter a wallet address.';
+                resultPre.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/transactions/${walletAddress}`);
+                const result = await response.json();
+
+                if (result.status === 'error') {
+                    throw new Error(result.message);
+                }
+
+                // Display the raw JSON data
+                resultPre.textContent = JSON.stringify(result, null, 2);
+                resultPre.style.display = 'block';
+                errorDiv.textContent = '';
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                resultPre.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
